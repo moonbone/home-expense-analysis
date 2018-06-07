@@ -1,0 +1,43 @@
+table.myTable {
+  border: 6px solid #948473;
+  background-color: #FFE3C6;
+  width: 1%;
+  text-align: center;
+  white-space:nowrap;
+}
+table.myTable td, table.myTable th {
+  border: 1px solid #948473;
+  padding: 0px 4px;
+}
+table.myTable tbody td {
+  font-size: 16px;
+}
+table.myTable thead {
+  background: #948473;
+  background: -moz-linear-gradient(top, #afa396 0%, #9e9081 66%, #948473 100%);
+  background: -webkit-linear-gradient(top, #afa396 0%, #9e9081 66%, #948473 100%);
+  background: linear-gradient(to bottom, #afa396 0%, #9e9081 66%, #948473 100%);
+}
+table.myTable thead th {
+  font-size: 17px;
+  font-weight: bold;
+  color: #F0F0F0;
+  text-align: left;
+  border-left: 2px solid #948473;
+}
+table.myTable thead th:first-child {
+  border-left: none;
+}
+
+table.myTable tfoot {
+  font-size: 16px;
+  font-weight: bold;
+  color: #F0F0F0;
+  background: #948473;
+  background: -moz-linear-gradient(top, #afa396 0%, #9e9081 66%, #948473 100%);
+  background: -webkit-linear-gradient(top, #afa396 0%, #9e9081 66%, #948473 100%);
+  background: linear-gradient(to bottom, #afa396 0%, #9e9081 66%, #948473 100%);
+}
+table.myTable tfoot td {
+  font-size: 16px;
+}

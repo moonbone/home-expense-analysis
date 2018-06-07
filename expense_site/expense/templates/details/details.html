@@ -1,0 +1,24 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    {% load static %}
+
+    <link rel="stylesheet" type="text/css" href="{% static 'table.css' %}" />
+    <title></title>
+</head>
+<body>
+<table class="myTable">
+    <thead><th>הערות</th><th>סכום חיוב</th><th>סכום כולל</th><th>בית עסק</th><th>תאריך</th><th>קובץ</th></thead>
+    {% for ex in details %}
+        <tr>
+            <td>{{ ex.notes }}</td>
+            <td>{{ ex.charge }}</td>
+            <td>{{ ex.total }}</td>
+            <td>{{ ex.name_id }}</td>
+            <td>{{ ex.date | date:"d/m/Y"}}</td>
+            <td>{{ ex.file.file_name }}</td>
+        </tr>
+    {% endfor %}
+</table>
+</body>
+</html>

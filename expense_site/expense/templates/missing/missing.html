@@ -1,0 +1,48 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    {% load static %}
+
+    <link rel="stylesheet" type="text/css" href="{% static 'table.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'transparentTable.css' %}" />
+    <title></title>
+</head>
+<body>
+<a href="{% url 'report' %}">Home</a>
+<br>
+<form id="upload_form" method="post">
+{% csrf_token %}
+<table class="myTable">
+    <thead><th>File Name</th><th>Date</th><th>Business</th><th>Total</th><th>Charged</th><th>Category</th></thead>
+    {% for ex in missing %}
+        <tr>
+            <td>{{ ex.file_name }}</td>
+            <td>{{ ex.date|date:"d/m/Y" }}</td>
+            <td><table class="transparentTable"><tr>
+                <td>{{ ex.name_id }}</td>
+                <td><input type="text" name="{{ ex.id }}_txt"></td>
+            </tr></table></td>
+            <td>{{ ex.total }}</td>
+            <td>{{ ex.charge }}</td>
+            <td>
+                <select name="{{ ex.id }}">
+                    {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if cat.id == 0 %} selected="true" {% endif %}>{{ cat.name }}</option>
+                    {% endfor %}
+                </select>
+            </td>
+        </tr>
+    {% endfor %}
+    <tfoot>
+        <tr>
+            <td/><td/><td>Total: </td><td/><td>{{ total | floatformat:"-2" }}</td><td/>
+        </tr>
+    </tfoot>
+</table>
+
+
+            <input type="submit" value="Update">
+    </form>
+
+</body>
+</html>

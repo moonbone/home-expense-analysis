@@ -1,0 +1,60 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    {% load static %}
+
+    <link rel="stylesheet" type="text/css" href="{% static 'table.css' %}" />
+    <title></title>
+</head>
+<body>
+    {% load mathfilters %}
+    <a href="{% url 'missing' %}">Missing Page</a>
+    <a href="/admin/expense/files">Files Added</a>
+<br>
+
+<h2>Expense Summary</h2>
+<table style="position: absolute; top: 80; bottom: 0; left: 0; right: 0;"><tr><td width="50%">
+<table class="myTable" id="reportTable">
+    <thead><th>1 Year</th><th>6 Months</th><th>3 Months</th><th>Last Month</th><th>Category</th></thead>
+    <tr>
+        <td id="-1_12">{{ not_categorized.lastYear | div:12 | floatformat:"-2" }}</td>
+        <td id="-1_6">{{ not_categorized.lastHalf | div:6 | floatformat:"-2" }}</td>
+        <td id="-1_3">{{ not_categorized.lastQuarter | div:3 | floatformat:"-2" }}</td>
+        <td id="-1_1">{{ not_categorized.lastMonth | floatformat:"-2" }}</td>
+        <td>ללא קטגוריה</td>
+    </tr>
+    {% for cat in sums %}
+        <tr>
+            <td id="{{ cat.id }}_12">{{ cat.lastYear |div:12 | floatformat:"-2" }}</td>
+            <td id="{{ cat.id }}_6">{{ cat.lastHalf | div:6  |floatformat:"-2" }}</td>
+            <td id="{{ cat.id }}_3">{{ cat.lastQuarter | div:3 | floatformat:"-2" }}</td>
+            <td id="{{ cat.id }}_1">{{ cat.lastMonth | floatformat:"-2" }}</td>
+            <td>{{ cat.name }}</td>
+        </tr>
+    {% endfor %}
+    <tfoot><tr>
+        <td>{{ totals.lastYear | div:12 | floatformat:"-2" }}</td>
+        <td>{{ totals.lastHalf | div:6 |floatformat:"-2" }}</td>
+        <td>{{ totals.lastQuarter | div:3 |floatformat:"-2" }}</td>
+        <td>{{ totals.lastMonth | floatformat:"-2" }}</td>
+        <td>סה"כ</td>
+    </tr>
+    <tr>
+        <td/><td/><td/><td>{{ income }}</td><td>הכנסה נטו</td>
+    </tr>
+    <tr>
+        <td>{{ income|mul:12|sub:totals.lastYear| floatformat:"-2" }}</td>
+        <td>{{ income|mul:6|sub:totals.lastHalf| floatformat:"-2" }}</td>
+        <td>{{ income|mul:3|sub:totals.lastQuarter| floatformat:"-2" }}</td>
+        <td>{{ income|sub:totals.lastMonth| floatformat:"-2" }}</td>
+        <td>חסכון</td>
+    </tr>
+    </tfoot>
+</table>
+</td><td>
+    <iframe height=100% width="200%"" src="{% static 'blank.html' %}" id="details_view"></iframe>
+</td>
+</tr></table>
+</body>
+<script type="text/javascript" src="{% static 'report.js' %}"></script>
+</html>

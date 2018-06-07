@@ -1,0 +1,12 @@
+table.transparentTable{
+    border-collapse: collapse;
+    border-spacing:0;
+}
+
+
+table.transparentTable th, table.transparentTable td{
+  padding:5px;
+    border:0;
+    width:100%;
+    white-space:nowrap;
+}
