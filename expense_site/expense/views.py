@@ -1,11 +1,15 @@
 from django.shortcuts import render
 
 # Create your views here.
-from django.http import HttpResponse
 from .models import Expense, Category, Names
 from django.db.models import Sum, Case, When, F,Q
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+import sys
+import os
+from expense_site import settings
+sys.path.append(os.path.join(settings.BASE_DIR,'..'))
+from Consts import consts
 
 def details(request):
     print (request.GET)
@@ -139,5 +143,5 @@ def report(request):
                   {'sums': sums,
                    'not_categorized': not_categorized,
                    'totals': totals,
-                   'income': 10000,
+                   'income': consts.monthly_income,
                    })

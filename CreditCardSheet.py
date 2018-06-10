@@ -2,14 +2,15 @@
 __author__ = 'maord'
 
 from xml.dom import minidom as xml
-import bs4
 import datetime
 import sqlite3
-import xlrd
 import sys
-import os
-from Consts import *
 import re
+
+import bs4
+import xlrd
+from Consts import *
+
 
 class CreditEntry:
     def __init__(self, date, name, total, charge, notes=''):
@@ -90,7 +91,7 @@ class CreditCardSheet:
             return rows
         else:
             try:
-                s = open(self._fp,encoding='cp1255').read()
+                s = open(self._fp, encoding='cp1255').read()
                 soup = bs4.BeautifulSoup(s, 'html.parser')
                 x = xml.parseString(soup.prettify())
                 e = x.getElementsByTagName('table')[1]

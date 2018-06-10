@@ -1,9 +1,9 @@
 __author__ = 'maord'
 
-from Consts import *
 import sqlite3
-import os
 import sys
+
+from Consts import *
 import CreditCardSheet
 
 

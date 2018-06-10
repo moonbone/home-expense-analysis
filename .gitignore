@@ -2,3 +2,4 @@
 expense_site/db.sqlite3
 expense.db
 __pycache__
+/LocalConsts.py
