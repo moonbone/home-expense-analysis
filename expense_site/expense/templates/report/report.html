@@ -15,7 +15,7 @@
 <h2>Expense Summary</h2>
 <table style="position: absolute; top: 80; bottom: 0; left: 0; right: 0;"><tr><td width="50%">
 <table class="myTable" id="reportTable">
-    <thead><th>1 Year</th><th>6 Months</th><th>3 Months</th><th>Last Month</th><th>Category</th></thead>
+    <thead><th>Last Year</th><th>Last Half</th><th>Last Quarter</th><th>Last Month</th><th>Category</th></thead>
     <tr>
         <td id="-1_12">{{ not_categorized.lastYear | div:12 | floatformat:"-2" }}</td>
         <td id="-1_6">{{ not_categorized.lastHalf | div:6 | floatformat:"-2" }}</td>
