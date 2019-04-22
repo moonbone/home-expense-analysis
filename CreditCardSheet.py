@@ -106,18 +106,36 @@ class CreditCardSheet:
                 return rows
 
             except UnicodeDecodeError:
-                s = open(self._fp).read()
-                x = xml.parseString(s)
-                e = x.getElementsByTagName('Table')[0]
-                rows = []
-                for row in e.getElementsByTagName('Row')[1:]:
-                    row_l = []
-                    for cell in row.getElementsByTagName('Data'):
-                        if cell.childNodes:
-                            row_l.append(cell.childNodes[0].data.strip())
-                        else:
-                            row_l.append('')
-                    #print row_l
-                    rows.append(CreditEntry.factory((row_l[0][:11], '%Y-%m-%dT'), row_l[2], row_l[5], *row_l[6:]))
-                return rows
+                try:
+                    b = xlrd.open_workbook(self._fp)
+                    s = b.sheet_by_index(0)
+                    header = list(s.get_rows())
+                    i = 1
+                    while u'תאריך רכישה' not in map(lambda x: x.value,header[0]):
+                        del header[0]
+                        i += 1
+                    header = header[0]
+                    rows = []
+                    for row in list(s.get_rows())[i:]:
+                        row_l = []
+                        for cell in row:
+                            row_l.append(cell.value)
+                        rows.append(CreditEntry.factory((row_l[0], '%d/%m/%Y'), row_l[1], str(row_l[2]), str(row_l[4]), row_l[7]))
+                    return rows
+                except:
+
+                    s = open(self._fp).read()
+                    x = xml.parseString(s)
+                    e = x.getElementsByTagName('Table')[0]
+                    rows = []
+                    for row in e.getElementsByTagName('Row')[1:]:
+                        row_l = []
+                        for cell in row.getElementsByTagName('Data'):
+                            if cell.childNodes:
+                                row_l.append(cell.childNodes[0].data.strip())
+                            else:
+                                row_l.append('')
+                        #print row_l
+                        rows.append(CreditEntry.factory((row_l[0][:11], '%Y-%m-%dT'), row_l[2], row_l[5], *row_l[6:]))
+                    return rows
                 

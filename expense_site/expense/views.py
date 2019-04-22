@@ -4,6 +4,17 @@ from django.shortcuts import render
 from .models import Expense, Category, Names
 from django.db.models import Sum, Case, When, F,Q
 from datetime import datetime
+import datetime as dt
+
+class datetime2(datetime):
+    def __init__(self):
+        super(dt.datetime, self).__init__(self)
+
+    def now(tz=None):
+        return dt.datetime(2018,12,1)
+
+#datetime = datetime2
+
 from dateutil.relativedelta import relativedelta
 import sys
 import os
@@ -11,19 +22,50 @@ from expense_site import settings
 sys.path.append(os.path.join(settings.BASE_DIR,'..'))
 from Consts import consts
 
+
+THIS_MONTH = datetime.today().month
+CURRENT_YEAR = datetime.today().year
+
+LAST_YEAR = CURRENT_YEAR - 1
+TWO_YEARS_AGO = CURRENT_YEAR - 2
+
+
+LAST_MONTH = ((THIS_MONTH - 1 - 1) % 12) + 1
+
+LAST_QUART = ((LAST_MONTH - 1)//3) + 1
+
+LAST_HALF = ((LAST_MONTH - 1)//6) + 1
+
+two_years_ago_start = datetime(TWO_YEARS_AGO, 1, 1)
+two_years_ago_end = datetime(TWO_YEARS_AGO+1, 1, 1)
+
+last_year_start = datetime(LAST_YEAR, 1, 1)
+last_year_end = datetime(LAST_YEAR+1, 1, 1)
+
+last_half_start = datetime(LAST_YEAR if LAST_MONTH < 6 else CURRENT_YEAR, (LAST_HALF-1)*6 + 1, 1)
+last_half_end = datetime(CURRENT_YEAR, ((LAST_HALF*6) % 12) + 1, 1)
+
+last_quart_start = datetime(LAST_YEAR if LAST_MONTH < 3 else CURRENT_YEAR, (LAST_QUART-1)*3 + 1, 1)
+last_quart_end = datetime(CURRENT_YEAR, ((LAST_QUART*3) % 12) + 1, 1)
+
+last_month_start = datetime(LAST_YEAR if LAST_MONTH == 12 else CURRENT_YEAR, LAST_MONTH, 1)
+last_month_end = datetime(CURRENT_YEAR, (LAST_MONTH % 12) + 1, 1)
+
 def details(request):
+    #TODO: fix buttons to new date format
     print (request.GET)
     if int(request.GET['cat']) == -1:
         return render(request, 'details/details.html',
                   {'details': Expense.objects.raw(r"SELECT * from expense  LEFT JOIN names on expense.name = names.name LEFT JOIN files on expense.file_id = files.id LEFT JOIN Category on names.cat = Category.id"
                                                   r" where (names.name is null or Category.id = 0) "
-                                                  r" and expense.date > date('now','start of month','-%s month') "
-                                                  r" ORDER BY date"%request.GET['monthsback'])
+                                                  r" and expense.date > date('%s','start of month','-%s month') "
+                                                  r" and expense.date < '%s'"
+                                                  r" ORDER BY date"%(datetime.now().strftime("%Y-%m-%d"),request.GET['monthsback'],datetime.now().strftime("%Y-%m-%d")))
                    })
 
 
     return render(request, 'details/details.html',
-                  {'details': Expense.objects.filter(date__gte= datetime.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0) -
+                  {'details': Expense.objects.filter(date__lt=datetime.now(),date__gte= datetime.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0) -
                                                                 relativedelta(months=int(request.GET['monthsback'])),
                                                      name__cat__id=int(request.GET['cat'])).order_by('date')
                    })
@@ -66,7 +108,7 @@ def missing(request):
 
 #& Q(name__isnull=False)
 def report(request):
-    sums= Category.objects.filter(Q(id__gt=0)).annotate(
+    sums= Category.objects.filter(Q(id__gt=0,names__expense__date__lt=datetime.now())).annotate(
         lastMonth= Sum(Case(When(names__expense__date__gte=
                                  datetime.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0) -
                                  relativedelta(months=1),
@@ -89,7 +131,7 @@ def report(request):
                                 then=F('names__expense__charge')*F('names__expense__total_charges')))))
 
 
-    totals = Expense.objects.filter(~Q(id=-1)).aggregate(
+    totals = Expense.objects.filter(~Q(id=-1) and Q(date__lt=datetime.now())).aggregate(
                        lastMonth=Sum(Case(When(date__gte=
                                                datetime.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0) -
                                                relativedelta(months=1),
@@ -111,7 +153,7 @@ def report(request):
                                                charge_number=1,
                                                then=F('charge')*F('total_charges')))))
 
-    not_categorized = Expense.objects.filter(~Q(id=-1)).aggregate(
+    not_categorized = Expense.objects.filter(~Q(id=-1)and Q(date__lt=datetime.now())).aggregate(
         lastMonth= totals['lastMonth'] - Sum(Case(When(date__gte=
                                  datetime.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0) -
                                  relativedelta(months=1),
